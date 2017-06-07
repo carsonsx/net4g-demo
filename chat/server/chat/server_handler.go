@@ -3,7 +3,7 @@ package chat
 import (
 	"github.com/carsonsx/log4g"
 	"github.com/carsonsx/net4g"
-	"github.com/carsonsx/net4g-demo/net4g-chat/net4g-chat/global"
+	"github.com/carsonsx/net4g-demo/chat/global"
 )
 
 var ServerDispatcher = net4g.NewDispatcher("chat-server")
