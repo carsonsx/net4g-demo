@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"github.com/carsonsx/log4g"
 	"github.com/carsonsx/net4g"
-	"github.com/carsonsx/net4g-demo/chat/global"
 	"github.com/carsonsx/net4g-demo/chat/server/chat"
 	"github.com/hashicorp/consul/api"
 	"math/rand"
 	"time"
+	"github.com/carsonsx/net4g-demo/chat/global"
 )
 
 func addrFn() (addr string, err error) {
@@ -41,6 +41,9 @@ func addrFn() (addr string, err error) {
 }
 
 func main() {
-	chat.RouterClient = net4g.NewTcpClient(addrFn).SetSerializer(global.Serializer).AddDispatchers(chat.RouterClientDispatcher).Start()
-	net4g.NewTcpServer("chat-server", ":8000").SetSerializer(global.Serializer).AddDispatchers(chat.ServerDispatcher).Start().Wait(chat.RouterClient)
+
+	log4g.SetLevel(log4g.LEVEL_TRACE)
+
+	routeCli := net4g.NewTcpClient(net4g.NewNetAddrFn(":9000")).SetSerializer(global.RouterSerializer).AddDispatchers(chat.RouterClientDispatcher).Start()
+	net4g.NewTcpServer("chat-server", ":8000").SetSerializer(global.ServerSerializer).AddDispatchers(chat.ServerDispatcher).Start().Wait(routeCli)
 }

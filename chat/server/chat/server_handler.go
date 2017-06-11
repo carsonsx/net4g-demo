@@ -6,22 +6,22 @@ import (
 	"github.com/carsonsx/net4g-demo/chat/global"
 )
 
-var ServerDispatcher = net4g.NewDispatcher("chat-server")
+var ServerDispatcher = net4g.NewDispatcher("chat-server", 1)
 
 func init() {
-	ServerDispatcher.AddHandler(sendMessage, global.SendMessageType)
+	ServerDispatcher.AddHandler(sendMessage, global.SEND_MESSAGE_KEY)
 	ServerDispatcher.AddHandler(setUserInfo, global.SetUserInfoType)
 }
 
-func sendMessage(req net4g.NetReq, res net4g.NetRes) {
-	log4g.Info(req.Msg())
-	RouterClient.Write(req.Msg())
+func sendMessage(agent net4g.NetAgent) {
+	RouterClientDispatcher.One(agent.RawPack(), nil)
 }
 
-func setUserInfo(req net4g.NetReq, res net4g.NetRes) {
-	u := req.Msg().(*global.SetUserInfo)
-	req.Session().Set("username", u.Username)
+func setUserInfo(agent net4g.NetAgent) {
+	log4g.Info(agent.Msg())
+	u := agent.Msg().(*global.SetUserInfo)
+	agent.Session().Set("username", u.Username)
 	var reply global.SetUserInfoReply
 	reply.Success = true
-	res.Write(&reply)
+	agent.Write(&reply)
 }

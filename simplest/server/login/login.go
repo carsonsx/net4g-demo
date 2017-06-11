@@ -8,7 +8,7 @@ import (
 	"reflect"
 )
 
-var Dispatcher = net4g.NewDispatcher("login")
+var Dispatcher = net4g.NewDispatcher("login", 1)
 
 func init() {
 	//Dispatcher.AddHandler(login)
@@ -21,15 +21,15 @@ func init() {
 	})
 }
 
-func login(req net4g.NetReq, res net4g.NetRes) {
-	log4g.Debug("g[%d] - %s", tools.GetGID(), req.Msg().(string))
-	res.Write("login")
+func login(agent net4g.NetAgent) {
+	log4g.Debug("g[%d] - %s", tools.GetGID(), agent.Msg().(string))
+	agent.Write("login")
 }
 
-func jsonLogin(req net4g.NetReq, res net4g.NetRes) {
-	log4g.Debug("g[%d] - %v", tools.GetGID(), req.Msg())
+func jsonLogin(agent net4g.NetAgent) {
+	log4g.Debug("g[%d] - %v", tools.GetGID(), agent.Msg())
 
-	userLogin := req.Msg().(*msg.UserLogin)
+	userLogin := agent.Msg().(*msg.UserLogin)
 
 	var result msg.UserLoginReply
 	if userLogin.Username == "carsonsx" && userLogin.Password == "123456" {
@@ -40,10 +40,14 @@ func jsonLogin(req net4g.NetReq, res net4g.NetRes) {
 		result.Msg = "wrong username or password"
 	}
 
-	req.Session().Set("userid", 1)
-	req.Session().Set("username", userLogin.Username)
+	agent.Session().Set("userid", 1)
+	agent.Session().Set("username", userLogin.Username)
 
 	log4g.Debug(result.Msg)
 
-	res.Write(&result)
+	agent.Write(&result)
+
+	var online msg.UserOnline
+	online.UseId = agent.Session().GetInt("userid")
+	Dispatcher.BroadcastOthers(agent.Session(), &online)
 }

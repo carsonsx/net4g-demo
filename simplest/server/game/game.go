@@ -8,7 +8,7 @@ import (
 	"reflect"
 )
 
-var Dispatcher = net4g.NewDispatcher("game")
+var Dispatcher = net4g.NewDispatcher("game", 1)
 
 func init() {
 	Dispatcher.AddHandler(changeName, reflect.TypeOf(&msg.ChangeName{}))
@@ -20,8 +20,8 @@ func init() {
 	})
 }
 
-func changeName(req net4g.NetReq, res net4g.NetRes) {
-	log4g.Info("userid: %d", req.Session().GetInt("userid"))
-	log4g.Info("g[%d] - %s", tools.GetGID(), req.Msg().(*msg.ChangeName).NewName)
+func changeName(agent net4g.NetAgent) {
+	log4g.Info("userid: %d", agent.Session().GetInt("userid"))
+	log4g.Info("g[%d] - %s", tools.GetGID(), agent.Msg().(*msg.ChangeName).NewName)
 	//res.Write("load")
 }

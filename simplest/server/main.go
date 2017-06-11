@@ -13,6 +13,8 @@ import (
 
 func main() {
 
+	//log4g.SetLevel(log4g.LEVEL_TRACE)
+
 	if log4g.IsTraceEnabled() {
 		log4g.Trace("[Entrance]total goroutine: %d", runtime.NumGoroutine())
 	}
@@ -21,22 +23,22 @@ func main() {
 		fmt.Fprint(w, "OK")
 	})
 
-	log4g.Info("HTTP server listening on %d\n", 8080)
+	log4g.Info("HTTP server listening on %d\n", 9090)
 	go func() {
-		log4g.Fatal(http.ListenAndServe(":8080", nil))
+		log4g.Fatal(http.ListenAndServe(":9090", nil))
 	}()
 
 	if log4g.IsTraceEnabled() {
 		log4g.Trace("[NotStarted]total goroutine: %d", runtime.NumGoroutine())
 	}
 
-	s1 := net4g.NewTcpServer("s1", ":9091").SetSerializer(msg.Serializer).AddDispatchers(net4g.NewDispatcher("s1")).Start()
+	s1 := net4g.NewTcpServer("s1", ":9091").SetSerializer(msg.Serializer).AddDispatchers(net4g.NewDispatcher("s1", 1)).Start()
 
-	s2 := net4g.NewTcpServer("s2", ":9092").SetSerializer(msg.Serializer).AddDispatchers(net4g.NewDispatcher("s2")).Start()
+	s2 := net4g.NewTcpServer("s2", ":9092").SetSerializer(msg.Serializer).AddDispatchers(net4g.NewDispatcher("s2", 1)).Start()
 
 	s3 := net4g.NewTcpServer("s3", ":9093").SetSerializer(msg.Serializer).AddDispatchers(login.Dispatcher, game.Dispatcher).EnableHeartbeat().Start()
 
-	s4 := net4g.NewTcpServer("4", ":9094").SetSerializer(msg.Serializer).AddDispatchers(net4g.NewDispatcher("s4")).Start()
+	s4 := net4g.NewTcpServer("4", ":9094").SetSerializer(msg.Serializer).AddDispatchers(net4g.NewDispatcher("s4", 1)).Start()
 
 	s4.Wait(s1, s2, s3)
 

@@ -9,31 +9,37 @@ import (
 
 func main() {
 
-	dispatcher := net4g.NewDispatcher("client")
-	dispatcher.AddHandler(func(req net4g.NetReq, res net4g.NetRes) {
-		log4g.Debug(req.Msg())
-	})
+	//log4g.SetLevel(log4g.LEVEL_TRACE)
 
-	dispatcher.AddHandler(func(req net4g.NetReq, res net4g.NetRes) {
-		userLoginReply := req.Msg().(*msg.UserLoginReply)
+	dispatcher := net4g.NewDispatcher("client", 1)
+
+	dispatcher.AddHandler(func(agent net4g.NetAgent) {
+		userOnline := agent.Msg().(*msg.UserOnline)
+		log4g.Info("user[%d] is online", userOnline.UseId)
+	}, reflect.TypeOf(&msg.UserOnline{}))
+
+	dispatcher.AddHandler(func(agent net4g.NetAgent) {
+		userLoginReply := agent.Msg().(*msg.UserLoginReply)
 		if userLoginReply.Code == 0 {
 			changeName := new(msg.ChangeName)
 			changeName.NewName = "NewName"
-			res.Write(changeName)
+			agent.Write(changeName)
 		} else {
 			log4g.Error(userLoginReply.Msg)
 		}
 	}, reflect.TypeOf(&msg.UserLoginReply{}))
 
-	dispatcher.AddHandler(func(req net4g.NetReq, res net4g.NetRes) {
-		userOffline := req.Msg().(*msg.UserOffline)
-		log4g.Info("user[%s] was offline", userOffline.UseId)
+	dispatcher.AddHandler(func(agent net4g.NetAgent) {
+		userOffline := agent.Msg().(*msg.UserOffline)
+		log4g.Info("user[%d] was offline", userOffline.UseId)
 	}, reflect.TypeOf(&msg.UserOffline{}))
 
-	jsonClient := net4g.NewTcpClient(net4g.AddrFn(":9093")).AddDispatchers(dispatcher).EnableHeartbeat().Start()
-	var userLogin msg.UserLogin
-	userLogin.Username = "carsonsx"
-	userLogin.Password = "123456"
-	jsonClient.Write(&userLogin)
-	jsonClient.Wait()
+	dispatcher.OnConnectionCreated(func(agent net4g.NetAgent) {
+		var userLogin msg.UserLogin
+		userLogin.Username = "carsonsx"
+		userLogin.Password = "123456"
+		agent.Write(&userLogin)
+	})
+
+	net4g.NewTcpClient(net4g.NewNetKeyAddrFn("c1", ":9093")).SetSerializer(msg.Serializer).AddDispatchers(dispatcher).EnableHeartbeat().Start().Wait()
 }

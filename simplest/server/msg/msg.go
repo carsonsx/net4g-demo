@@ -13,15 +13,17 @@ func init() {
 }
 
 func jsonByKey() {
-	Serializer.RegisterByKey(reflect.TypeOf(&UserLogin{}))
-	Serializer.RegisterByKey(reflect.TypeOf(&UserLoginReply{}), "user_login_reply")
-	Serializer.RegisterByKey(reflect.TypeOf(&UserOffline{}))
-	Serializer.RegisterByKey(reflect.TypeOf(&ChangeName{}))
+	Serializer.RegisterKey(reflect.TypeOf(&UserLogin{}), true)
+	Serializer.RegisterKey(reflect.TypeOf(&UserLoginReply{}), true, "user_login_reply")
+	Serializer.RegisterKey(reflect.TypeOf(&UserOnline{}), true)
+	Serializer.RegisterKey(reflect.TypeOf(&UserOffline{}), true)
+	Serializer.RegisterKey(reflect.TypeOf(&ChangeName{}), true)
 }
 
 func jsonById() {
-	Serializer.RegisterById(reflect.TypeOf(&UserLogin{}))
-	Serializer.RegisterById(reflect.TypeOf(&UserLoginReply{}))
-	Serializer.RegisterById(reflect.TypeOf(&UserOffline{}))
-	Serializer.RegisterById(reflect.TypeOf(&ChangeName{}))
+	Serializer.RegisterId(reflect.TypeOf(&UserLogin{}), true)
+	Serializer.RegisterId(reflect.TypeOf(&UserLoginReply{}), true)
+	Serializer.RegisterId(reflect.TypeOf(&UserOnline{}), true)
+	Serializer.RegisterId(reflect.TypeOf(&UserOffline{}), true)
+	Serializer.RegisterId(reflect.TypeOf(&ChangeName{}), true)
 }
