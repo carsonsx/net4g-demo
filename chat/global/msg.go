@@ -2,7 +2,6 @@ package global
 
 import (
 	"github.com/carsonsx/net4g"
-	"reflect"
 )
 
 const (
@@ -10,20 +9,12 @@ const (
 )
 
 
-var ClientSerializer = net4g.NewJsonSerializer()
-var ServerSerializer = net4g.NewJsonSerializer()
-var RouterSerializer = net4g.NewJsonSerializer()
+var Serializer = net4g.NewJsonSerializer()
 
 func init() {
-	ClientSerializer.RegisterKey(SetUserInfoType, true, "SetUserInfo")
-	ClientSerializer.RegisterKey(SetUserInfoReplyType, true, "SetUserInfoReply")
-	ClientSerializer.RegisterKey(SendMessageType, true, SEND_MESSAGE_KEY)
-
-	ServerSerializer.RegisterKey(SetUserInfoType, true, "SetUserInfo")
-	ServerSerializer.RegisterKey(SetUserInfoReplyType, true, "SetUserInfoReply")
-	ServerSerializer.RegisterKey(SendMessageType, false, SEND_MESSAGE_KEY)
-
-	RouterSerializer.RegisterKey(SendMessageType, false, SEND_MESSAGE_KEY)
+	Serializer.RegisterId(new(SetUserInfo), "SetUserInfo")
+	Serializer.RegisterId(new(SetUserInfoReply), "SetUserInfoReply")
+	Serializer.RegisterId(new(SendMessage), SEND_MESSAGE_KEY)
 }
 
 type SendMessage struct {
@@ -39,7 +30,3 @@ type SetUserInfo struct {
 type SetUserInfoReply struct {
 	Success bool
 }
-
-var SendMessageType = reflect.TypeOf(&SendMessage{})
-var SetUserInfoType = reflect.TypeOf(&SetUserInfo{})
-var SetUserInfoReplyType = reflect.TypeOf(&SetUserInfoReply{})

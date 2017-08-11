@@ -2,28 +2,24 @@ package msg
 
 import (
 	"github.com/carsonsx/net4g"
-	"reflect"
 )
 
 var Serializer = net4g.NewJsonSerializer()
 
-func init() {
-	//jsonByKey()
-	jsonById()
+
+func jsonByString() {
+
+	Serializer.DeserializeId(new(UserLogin))
+	Serializer.SerializeId(new(UserLoginReply), "user_login_reply")
+	Serializer.SerializeId(new(UserOnline))
+	Serializer.SerializeId(new(UserOffline))
+	Serializer.DeserializeId(new(ChangeName))
 }
 
-func jsonByKey() {
-	Serializer.RegisterKey(reflect.TypeOf(&UserLogin{}), true)
-	Serializer.RegisterKey(reflect.TypeOf(&UserLoginReply{}), true, "user_login_reply")
-	Serializer.RegisterKey(reflect.TypeOf(&UserOnline{}), true)
-	Serializer.RegisterKey(reflect.TypeOf(&UserOffline{}), true)
-	Serializer.RegisterKey(reflect.TypeOf(&ChangeName{}), true)
-}
-
-func jsonById() {
-	Serializer.RegisterId(reflect.TypeOf(&UserLogin{}), true)
-	Serializer.RegisterId(reflect.TypeOf(&UserLoginReply{}), true)
-	Serializer.RegisterId(reflect.TypeOf(&UserOnline{}), true)
-	Serializer.RegisterId(reflect.TypeOf(&UserOffline{}), true)
-	Serializer.RegisterId(reflect.TypeOf(&ChangeName{}), true)
+func InitSerializer() {
+	Serializer.DeserializeId(new(UserLogin))
+	Serializer.SerializeId(new(UserLoginReply))
+	Serializer.SerializeId(new(UserOnline))
+	Serializer.SerializeId(new(UserOffline))
+	Serializer.DeserializeId(new(ChangeName))
 }

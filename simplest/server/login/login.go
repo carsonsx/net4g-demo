@@ -13,10 +13,10 @@ var Dispatcher = net4g.NewDispatcher("login", 1)
 func init() {
 	//Dispatcher.AddHandler(login)
 	Dispatcher.AddHandler(jsonLogin, reflect.TypeOf(&msg.UserLogin{}))
-	Dispatcher.OnConnectionClosed(func(session net4g.NetSession) {
+	Dispatcher.OnConnectionClosed(func(agent net4g.NetAgent) {
 		log4g.Info("remove session in redis")
 		var offline msg.UserOffline
-		offline.UseId = session.GetInt("userid")
+		offline.UseId = agent.Session().GetInt("userid")
 		Dispatcher.BroadcastAll(&offline)
 	})
 }

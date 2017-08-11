@@ -12,7 +12,7 @@ var Dispatcher = net4g.NewDispatcher("game", 1)
 
 func init() {
 	Dispatcher.AddHandler(changeName, reflect.TypeOf(&msg.ChangeName{}))
-	Dispatcher.OnConnectionClosed(func(session net4g.NetSession) {
+	Dispatcher.OnConnectionClosed(func(agent net4g.NetAgent) {
 		log4g.Info("save session data to db")
 	})
 	Dispatcher.OnDestroy(func() {

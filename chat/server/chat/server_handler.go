@@ -6,15 +6,16 @@ import (
 	"github.com/carsonsx/net4g-demo/chat/global"
 )
 
-var ServerDispatcher = net4g.NewDispatcher("chat-server", 1)
+var ServerDispatcher = net4g.NewDispatcher("chat-server")
 
 func init() {
 	ServerDispatcher.AddHandler(sendMessage, global.SEND_MESSAGE_KEY)
-	ServerDispatcher.AddHandler(setUserInfo, global.SetUserInfoType)
+	ServerDispatcher.AddHandler(setUserInfo, new(global.SetUserInfo))
 }
 
 func sendMessage(agent net4g.NetAgent) {
-	RouterClientDispatcher.One(agent.RawPack(), nil)
+	log4g.Info(agent.Msg())
+	RouterClientDispatcher.BroadcastOne(agent.RawPack(), nil)
 }
 
 func setUserInfo(agent net4g.NetAgent) {

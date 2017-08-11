@@ -42,8 +42,16 @@ func addrFn() (addr string, err error) {
 
 func main() {
 
-	log4g.SetLevel(log4g.LEVEL_TRACE)
+	//log4g.SetLevel(log4g.LEVEL_TRACE)
 
-	routeCli := net4g.NewTcpClient(net4g.NewNetAddrFn(":9000")).SetSerializer(global.RouterSerializer).AddDispatchers(chat.RouterClientDispatcher).Start()
-	net4g.NewTcpServer("chat-server", ":8000").SetSerializer(global.ServerSerializer).AddDispatchers(chat.ServerDispatcher).Start().Wait(routeCli)
+	routeCli := net4g.NewTcpClient(net4g.NewNetAddrFn(":9000")).
+		SetSerializer(global.Serializer).
+		AddDispatchers(chat.RouterClientDispatcher).
+		Connect()
+
+	net4g.NewTcpServer("chat-server", ":8000").
+		SetSerializer(global.Serializer).
+		AddDispatchers(chat.ServerDispatcher).
+		Start().
+		Wait(routeCli)
 }

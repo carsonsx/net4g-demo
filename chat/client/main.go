@@ -10,7 +10,10 @@ import (
 var dispatcher = net4g.NewDispatcher("chat-client", 1)
 
 func init() {
-	dispatcher.AddHandler(setUserInfoReply, global.SetUserInfoReplyType)
+	dispatcher.AddHandler(setUserInfoReply, new(global.SetUserInfoReply))
+	dispatcher.AddHandler(func(agent net4g.NetAgent) {
+		log4g.Debug("message: %v", agent.Msg())
+	}, new(global.SendMessage))
 }
 
 //func addrFn() (addr string, err error) {
@@ -40,27 +43,26 @@ func init() {
 //}
 
 func setUserInfoReply(agent net4g.NetAgent) {
-
 	if agent.Msg().(*global.SetUserInfoReply).Success {
-		var m global.SendMessage
-		m.Text = "hello world!"
-		var stop bool
-		for !stop {
-			time.Sleep(1 * time.Second)
-			if err := dispatcher.One(&m, func(err error) {
-				stop = true
-			}); err != nil {
-				break
+		go func() {
+			var m global.SendMessage
+			m.Text = "hello world!"
+			var stop bool
+			for !stop {
+				time.Sleep(1 * time.Second)
+				if err := dispatcher.BroadcastOne(&m, func(err error) {
+					stop = true
+				}); err != nil {
+					break
+				}
 			}
-		}
-
+		}()
 	}
-
 }
 
 func main() {
 
-	log4g.SetLevel(log4g.LEVEL_TRACE)
+	//log4g.SetLevel(log4g.LEVEL_TRACE)
 
 	dispatcher.OnConnectionCreated(func(agent net4g.NetAgent) {
 		var u global.SetUserInfo
@@ -69,8 +71,8 @@ func main() {
 	})
 
 	net4g.NewTcpClient(net4g.NewNetAddrFn(":8000")).
-		SetSerializer(global.ClientSerializer).
+		SetSerializer(global.Serializer).
 		AddDispatchers(dispatcher).
-		Start().
+		Connect().
 		Wait()
 }

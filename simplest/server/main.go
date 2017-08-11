@@ -15,6 +15,8 @@ func main() {
 
 	//log4g.SetLevel(log4g.LEVEL_TRACE)
 
+	msg.InitSerializer()
+
 	if log4g.IsTraceEnabled() {
 		log4g.Trace("[Entrance]total goroutine: %d", runtime.NumGoroutine())
 	}

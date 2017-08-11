@@ -7,7 +7,15 @@ import (
 	"github.com/carsonsx/net4g-demo/simplest/server/msg"
 )
 
+var serializer = net4g.NewJsonSerializer()
+
 func main() {
+
+	serializer.SerializeId(new(msg.UserLogin))
+	serializer.DeserializeId(new(msg.UserLoginReply))
+	serializer.DeserializeId(new(msg.UserOnline))
+	serializer.DeserializeId(new(msg.UserOffline))
+	serializer.SerializeId(new(msg.ChangeName))
 
 	//log4g.SetLevel(log4g.LEVEL_TRACE)
 
@@ -23,6 +31,7 @@ func main() {
 		if userLoginReply.Code == 0 {
 			changeName := new(msg.ChangeName)
 			changeName.NewName = "NewName"
+			log4g.Debug("request change name")
 			agent.Write(changeName)
 		} else {
 			log4g.Error(userLoginReply.Msg)
@@ -41,5 +50,10 @@ func main() {
 		agent.Write(&userLogin)
 	})
 
-	net4g.NewTcpClient(net4g.NewNetKeyAddrFn("c1", ":9093")).SetSerializer(msg.Serializer).AddDispatchers(dispatcher).EnableHeartbeat().Start().Wait()
+	net4g.NewTcpClient(net4g.NewNetKeyAddrFn("c1", ":9093")).
+		SetSerializer(serializer).
+		AddDispatchers(dispatcher).
+		EnableHeartbeat().
+		Connect().
+		Wait()
 }
