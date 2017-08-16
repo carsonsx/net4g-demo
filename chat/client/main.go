@@ -7,7 +7,7 @@ import (
 	"github.com/carsonsx/log4g"
 )
 
-var dispatcher = net4g.NewDispatcher("chat-client", 1)
+var dispatcher = net4g.NewDispatcher("chat-client")
 
 func init() {
 	dispatcher.AddHandler(setUserInfoReply, new(global.SetUserInfoReply))

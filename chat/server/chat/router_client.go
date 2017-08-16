@@ -5,7 +5,7 @@ import (
 	"github.com/carsonsx/net4g-demo/chat/global"
 )
 
-var RouterClientDispatcher = net4g.NewDispatcher("router-client", 1)
+var RouterClientDispatcher = net4g.NewDispatcher("router-client")
 
 func init() {
 	RouterClientDispatcher.AddHandler(forward, global.SEND_MESSAGE_KEY)
